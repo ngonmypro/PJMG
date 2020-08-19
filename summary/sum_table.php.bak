@@ -1,0 +1,304 @@
+<?php session_start();
+date_default_timezone_set("Asia/Bangkok");
+include '../js/conn.php';?>
+<div class="row" >
+  <div class="col-md-3">
+    <table class="table table-striped table-bordered">
+      <?php
+        //----------------------------------------------
+        $sql_yesum = 'SELECT COUNT(ProjID) AS allproj FROM tbl_proj ';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum.= ' WHERE  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum.= ' WHERE  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum = mysql_query($sql_yesum);
+        $objyesum = mysql_fetch_assoc($rs_yesum);
+        $allp = $objyesum['allproj'];
+        //----------------------------------------------
+        $sql_yesum2 = 'SELECT COUNT(ProStatus) AS comproj FROM tbl_proj WHERE ProStatus = 5';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum2.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum2.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum2 = mysql_query($sql_yesum2);
+        $objyesum2 = mysql_fetch_assoc($rs_yesum2);
+        $compp = $objyesum2['comproj'];
+        //----------------------------------------------
+         $sql_yesum3 = 'SELECT COUNT(ProStatus) AS opproj FROM tbl_proj WHERE ProStatus = 1';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum3.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum3.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum3 = mysql_query($sql_yesum3);
+        $objyesum3 = mysql_fetch_assoc($rs_yesum3);
+        $opp = $objyesum3['opproj'];
+        //----------------------------------------------
+        $sql_yesum4 = 'SELECT COUNT(ProStatus) AS ohproj FROM tbl_proj WHERE ProStatus = 2';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum4.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum4.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum4 = mysql_query($sql_yesum4);
+        $objyesum4 = mysql_fetch_assoc($rs_yesum4);
+        $ohp = $objyesum4['ohproj'];
+        //----------------------------------------------
+        $sql_yesum5 = 'SELECT COUNT(ProStatus) AS clproj FROM tbl_proj WHERE ProStatus = 3';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum5.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum5.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum5 = mysql_query($sql_yesum5);
+        $objyesum5 = mysql_fetch_assoc($rs_yesum5);
+        $clop = $objyesum5['clproj'];
+        //----------------------------------------------
+        $sql_yesum6 = 'SELECT COUNT(ProStatus) AS calproj FROM tbl_proj WHERE ProStatus = 4';
+        if ($_POST['year'] == Date("Y")) {
+          $sql_yesum6.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }else{
+          $sql_yesum6.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+        }
+        $rs_yesum6 = mysql_query($sql_yesum6);
+        $objyesum6 = mysql_fetch_assoc($rs_yesum6);
+        $clp = $objyesum6['calproj'];
+        //----------------------------------------------
+      ?>
+      <tbody>
+         <tr>
+          <th>โปรเจคทั้งหมด</th>
+          <td><?php echo $allp;?></td>
+        </tr>
+        <tr>
+          <th>Complete</th>
+          <td><?php echo $compp;?></td>
+         </tr>
+        <tr>
+          <th>Open</th>
+          <td><?php echo $opp;?></td>
+        </tr>
+        <tr>
+          <th>On Hold</th>
+          <td><?php echo $ohp;?></td>
+        </tr>
+        <tr>
+          <th>Closed</th>
+          <td><?php echo $clop;?></td>
+        </tr>
+        <tr>
+          <th>Cancelled</th>
+          <td><?php echo $clp;?></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-9">
+    <div id="echartpie" style="height:350px;"></div>
+  </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    <table id="tablesumall" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>โปรเจคทั้งหมด</th>
+                <th>Complete</th>
+                <th>Open</th>
+                <th>On Hold</th>
+                <th>Closed</th>
+                <th>Cancelled</th>
+            </tr>
+        </thead>
+        <?php $sql_userS = 'SELECT * FROM tbl_users WHERE UserID ';
+                $objuserS = mysql_query($sql_userS);?>
+        <tbody>
+        <?php while ($row = mysql_fetch_array($objuserS)) {
+                $user = $row['UserSname'];
+         ?>
+            <tr>
+                <td><?php echo $user;?></td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesumu = 'SELECT COUNT(ProjID) AS allproju FROM tbl_proj WHERE ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                  $sql_yesumu.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                  $sql_yesumu.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesumu = mysql_query($sql_yesumu);
+                $objyesumu = mysql_fetch_assoc($rs_yesumu);
+                echo  $objyesumu['allproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesum2u = 'SELECT COUNT(ProStatus) AS comproju FROM tbl_proj WHERE ProStatus = 5 and ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                  $sql_yesum2u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                  $sql_yesum2u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesum2u = mysql_query($sql_yesum2u);
+                $objyesum2u = mysql_fetch_assoc($rs_yesum2u);
+                echo $objyesum2u['comproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesum3u = 'SELECT COUNT(ProStatus) AS opproju FROM tbl_proj WHERE ProStatus = 1 and ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                  $sql_yesumu.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                  $sql_yesum3u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesum3u = mysql_query($sql_yesum3u);
+                $objyesum3u = mysql_fetch_assoc($rs_yesum3u);
+                echo $objyesum3u['opproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesum4u = 'SELECT COUNT(ProStatus) AS ohproju FROM tbl_proj WHERE ProStatus = 2 and ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                    $sql_yesum4u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                    $sql_yesum4u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesum4u = mysql_query($sql_yesum4u);
+                $objyesum4u = mysql_fetch_assoc($rs_yesum4u);
+                echo $objyesum4u['ohproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesum5u = 'SELECT COUNT(ProStatus) AS clproju FROM tbl_proj WHERE ProStatus = 3 and ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                  $sql_yesum5u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                   $sql_yesum5u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesum5u = mysql_query($sql_yesum5u);
+                $objyesum5u = mysql_fetch_assoc($rs_yesum5u);
+                echo $objyesum5u['clproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+                <td>
+                <?php
+                //----------------------------------------------
+                $sql_yesum6u = 'SELECT COUNT(ProStatus) AS calproju FROM tbl_proj WHERE ProStatus = 4 and ProCreateUser = "'.$row['UserID'].'" ';
+                if ($_POST['year'] == Date("Y")) {
+                  $sql_yesum6u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }else{
+                  $sql_yesum6u.= ' and  Date(ProDateStart) BETWEEN  "'.$_POST['year'].'-1-1" and "'.$_POST['year'].'-12-31" ';
+                }
+                $rs_yesum6u = mysql_query($sql_yesum6u);
+                $objyesum6u = mysql_fetch_assoc($rs_yesum6u);
+                echo $objyesum6u['calproju'];
+                //----------------------------------------------
+                ?>
+                </td>
+            </tr>
+                <?php }mysql_close($c);?>
+            </tbody>
+    </table>
+  </div>
+</div>
+<script>
+    $(function() {
+      $("#tablesumall").DataTable();
+
+        if ($('#echartpie').length ){
+
+			  var echartPie = echarts.init(document.getElementById('echartpie'));
+
+			  echartPie.setOption({
+				tooltip: {
+				  trigger: 'item',
+				  formatter: "{a} <br/>{b} : {c} ({d}%)"
+				},
+				legend: {
+				  x: 'center',
+				  y: 'bottom',
+				  data: ['Complete', 'Open', 'On Hold', 'Closed', 'Cancelled']
+				},
+				toolbox: {
+				  show: true,
+				  feature: {
+					magicType: {
+					  show: true,
+					  type: ['pie', 'funnel'],
+					  option: {
+						funnel: {
+						  x: '25%',
+						  width: '50%',
+						  funnelAlign: 'left',
+						  max: 1548
+						}
+					  }
+					},
+					restore: {
+					  show: true,
+					  title: "Restore"
+					},
+					saveAsImage: {
+					  show: true,
+					  title: "Save Image"
+					}
+				  }
+				},
+        calculable: true,
+        color: [
+            '#01DF74', '#0080FF', '#848484', '#DF7401',
+					  '#B40404'
+				],
+        title: {
+					textStyle: {
+						color: '#333'
+					}
+				},
+				textStyle: {
+					  fontFamily: 'Arial, Verdana, sans-serif'
+				},
+				series: [{
+				  name: 'รายงานสรุป',
+				  type: 'pie',
+				  radius: '55%',
+				  center: ['50%', '48%'],
+				  data: [{
+					value: <?php echo $compp;?>,
+					name: 'Complete'
+				  }, {
+					value: <?php echo $opp;?>,
+					name: 'Open'
+				  }, {
+					value: <?php echo $ohp;?>,
+					name: 'On Hold'
+				  }, {
+					value: <?php echo $clop;?>,
+					name: 'Closed'
+				  }, {
+					value: <?php echo $ohp;?>,
+					name: 'Cancelled'
+				  }]
+				}]
+			  });
+
+			}
+
+
+    });
+</script>
